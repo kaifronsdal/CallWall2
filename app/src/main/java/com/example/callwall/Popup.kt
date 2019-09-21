@@ -15,8 +15,6 @@ import android.view.ViewGroup.LayoutParams;
 import kotlin.math.abs
 import android.os.Build
 
-
-
 class Popup : Service(), View.OnClickListener, View.OnTouchListener {
     private var topLeftView: View? = null
 

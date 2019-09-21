@@ -15,22 +15,8 @@ import android.annotation.TargetApi
 import android.graphics.PixelFormat
 import android.util.Log
 import android.view.WindowManager
-import androidx.core.app.ActivityCompat.requestPermissions
-import android.Manifest.permission
-import android.Manifest.permission.INTERNET
-import android.Manifest.permission.READ_CONTACTS
-import android.Manifest.permission.CALL_PHONE
-import android.Manifest.permission.READ_PHONE_STATE
 import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.ContextCompat.getSystemService
-import android.app.NotificationManager
-import android.media.AudioManager
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 
 const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
 
@@ -103,12 +89,14 @@ class MainActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         ).show()
 
-        val params = getParams();
+        val params = getParams()
         params.x = 50
         params.y = 100
 
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        CheckValidTask.wm = wm
+        CheckValidTask.inflater = inflater
         val myView = inflater.inflate(R.layout.popup, null)
         myView.setOnTouchListener { _, _ ->
             Toast.makeText(
@@ -116,6 +104,7 @@ class MainActivity : AppCompatActivity() {
                 "touch",
                 Toast.LENGTH_LONG
             ).show()
+            wm.removeView(myView)
             true
         }
 

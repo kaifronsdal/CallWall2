@@ -16,7 +16,11 @@ import android.graphics.PixelFormat
 import android.util.Log
 import android.view.WindowManager
 import android.content.pm.PackageManager
+import android.view.Gravity
 import androidx.core.content.ContextCompat
+import android.util.DisplayMetrics
+
+
 
 const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
 
@@ -90,8 +94,14 @@ class MainActivity : AppCompatActivity() {
         ).show()
 
         val params = getParams()
-        params.x = 50
-        params.y = 100
+//        params.x = 0
+//        params.y = 0
+//        params.y =
+//        params.gravity = Gravity.BOTTOM
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        params.y = displayMetrics.heightPixels / 2 - params.height
+        params.width = displayMetrics.widthPixels
 
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

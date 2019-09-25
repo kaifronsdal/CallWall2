@@ -16,14 +16,12 @@ import java.net.URL
 class IncomingCallReceiver: BroadcastReceiver() {
     companion object {
         var thisActivity: Activity? = null
+        var checkCall: Boolean = true
+
+        fun toggleCheck() {
+            checkCall = !checkCall
+        }
     }
-//
-//    fun getActivity(): Activity? {
-//        if (thisActivity == null) {
-//            thisActivity = MainActivity.getInstance()
-//        }
-//        return thisActivity
-//    }
 
     fun checkBusyValid(number: Number): Boolean {
         //var response = URL("http://10.7.65.105:3000/number/$number").readText()
@@ -45,12 +43,13 @@ class IncomingCallReceiver: BroadcastReceiver() {
             "Recieve",
             Toast.LENGTH_LONG
         ).show()
-        Log.v("asdf", "--------------------------------------------------------------")
-        println("Hello World!")
+        if (!checkCall) {
+            return
+        }
+
         var number: Int = 16505461126.toInt()
         CheckValidTask.thisActivity = thisActivity
         CheckValidTask().execute(number)
-        //println(checkBusyValid(16505461126))
         println("Done")
     }
 }

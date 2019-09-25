@@ -13,13 +13,11 @@ import android.provider.Settings.canDrawOverlays
 import android.os.Build
 import android.annotation.TargetApi
 import android.graphics.PixelFormat
-import android.util.Log
 import android.view.WindowManager
 import android.content.pm.PackageManager
-import android.view.Gravity
 import androidx.core.content.ContextCompat
 import android.util.DisplayMetrics
-
+import android.widget.Button
 
 
 const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
@@ -27,9 +25,15 @@ const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main);
+
         checkPermissionOverlay()
         IncomingCallReceiver.thisActivity = this
-        Log.v("aaaa", "--------------------------------------------------------------")
+
+        findViewById<Button>(R.id.toggle).setOnClickListener {
+            IncomingCallReceiver.toggleCheck()
+        }
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED || checkSelfPermission(
                     Manifest.permission.CALL_PHONE

@@ -1,15 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:id="@+id/linearLayout1">
-
-<Button
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ConstraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Show Popup Window"
-    android:id="@+id/showPopupBtn"/>
+    android:layout_height="match_parent">
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="166dp"
+        android:layout_height="166dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.21"
+        app:srcCompat="@drawable/cw3" />
+
+    <ToggleButton
+        android:id="@+id/toggle"
+        style="@android:style/Animation.Translucent"
+        android:layout_width="166dp"
+        android:layout_height="94dp"
+        android:background="@drawable/toggle_selector"
+        android:checked="true"
+        android:textColor="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo"
+        app:layout_constraintVertical_bias="0.389" />
+
+    <TextView
+        android:id="@+id/verifiedtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Calls Verified"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionMode.Title"
+        android:textColor="@android:color/holo_blue_dark"
+        android:typeface="sans"
+        app:fontFamily="@font/julius_sans_one"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toggle"
+        app:layout_constraintVertical_bias="0.294" />
+
+    <TextView
+        android:id="@+id/verifiedCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="18sp"
+        app:fontFamily="@font/julius_sans_one"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/verifiedtext"
+        app:layout_constraintVertical_bias="0.117" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

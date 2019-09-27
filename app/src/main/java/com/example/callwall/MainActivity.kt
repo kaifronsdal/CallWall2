@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.toggle).setOnClickListener {
             IncomingCallReceiver.toggleCheck()
+            println("toggle: " + IncomingCallReceiver.checkCall)
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {

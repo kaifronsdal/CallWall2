@@ -20,7 +20,7 @@
 
     <ToggleButton
         android:id="@+id/toggle"
-        style="@android:style/Animation.Translucent"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="166dp"
         android:layout_height="94dp"
         android:background="@drawable/toggle_selector"

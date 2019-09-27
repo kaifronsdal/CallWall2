@@ -16,7 +16,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.21"
-        app:srcCompat="@drawable/cw3" />
+        app:srcCompat="@drawable/cw3"
+        android:contentDescription="Logo" />
 
     <ToggleButton
         android:id="@+id/toggle"

@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissionOverlay()
         IncomingCallReceiver.thisActivity = this
+        CheckValidTask.windowManager = windowManager
 
         findViewById<Button>(R.id.toggle).setOnClickListener {
             IncomingCallReceiver.toggleCheck()
@@ -98,33 +99,33 @@ class MainActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         ).show()
 
-        val params = getParams()
-//        params.x = 0
-//        params.y = 0
-//        params.y =
-//        params.gravity = Gravity.BOTTOM
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        params.y = displayMetrics.heightPixels / 2 - params.height
-        params.width = displayMetrics.widthPixels
-
-        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        CheckValidTask.wm = wm
-        CheckValidTask.inflater = inflater
-        val myView = inflater.inflate(R.layout.popup, null)
-        myView.setOnTouchListener { _, _ ->
-            Toast.makeText(
-                this@MainActivity,
-                "touch",
-                Toast.LENGTH_LONG
-            ).show()
-            wm.removeView(myView)
-            true
-        }
-
-        // Add layout to window manager
-        wm.addView(myView, params)
+//        val params = getParams()
+////        params.x = 0
+////        params.y = 0
+////        params.y =
+////        params.gravity = Gravity.BOTTOM
+//        val displayMetrics = DisplayMetrics()
+//        windowManager.defaultDisplay.getMetrics(displayMetrics)
+//        params.y = displayMetrics.heightPixels / 2 - params.height
+//        params.width = displayMetrics.widthPixels
+//
+//        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+//        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//        CheckValidTask.wm = wm
+//        CheckValidTask.inflater = inflater
+//        val myView = inflater.inflate(R.layout.popup_searching, null)
+//        myView.setOnTouchListener { _, _ ->
+//            Toast.makeText(
+//                this@MainActivity,
+//                "touch",
+//                Toast.LENGTH_LONG
+//            ).show()
+//            wm.removeView(myView)
+//            true
+//        }
+//
+//        // Add layout to window manager
+//        wm.addView(myView, params)
     }
 
     private fun getParams(): WindowManager.LayoutParams {

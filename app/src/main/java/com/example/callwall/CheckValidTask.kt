@@ -1,15 +1,21 @@
 package com.example.callwall
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.PixelFormat
 import android.os.AsyncTask
 import android.os.Build
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
+import com.google.android.material.snackbar.Snackbar
 import java.net.URL
+import android.R
+import android.R.id
+import android.widget.TextView
+
+
 
 
 class CheckValidTask : AsyncTask<Int, Void, Boolean>() {
@@ -18,6 +24,7 @@ class CheckValidTask : AsyncTask<Int, Void, Boolean>() {
         var wm: WindowManager? = null
                 //= getSystemService(Context.WINDOW_SERVICE) as WindowManager
         var inflater: LayoutInflater? = null
+        var windowManager: WindowManager? = null
                         //= getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     }
 
@@ -43,39 +50,61 @@ class CheckValidTask : AsyncTask<Int, Void, Boolean>() {
 
     override fun onPreExecute() {
         super.onPreExecute()
+        val params = getParams()
+        val displayMetrics = DisplayMetrics()
+        windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+        params.y = displayMetrics.heightPixels / 2 - params.height
+        params.width = displayMetrics.widthPixels
 
+
+        val myView = inflater?.inflate(R.layout.popup_searching, null)
+        myView?.setOnTouchListener { _, event: MotionEvent ->
+            println(event.y)
+            if (event.y > 0) {
+                wm?.removeView(myView)
+            }
+            true
+        }
+
+        // Add layout to window manager
+        wm?.addView(myView, params)
     }
 
     override fun onPostExecute(result: Boolean?) {
         super.onPostExecute(result)
-        Toast.makeText(
-            IncomingCallReceiver.thisActivity,
-            "Done!!!",
-            Toast.LENGTH_LONG
-        ).show()
         println("onPostExecute")
         println(result)
         println("-------------------------------")
-        if (result != null && !result) {
-            val params = getParams()
-            params.x = 50
-            params.y = 100
+//        val params = getParams()
+//        val displayMetrics = DisplayMetrics()
+//        windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+//        params.y = displayMetrics.heightPixels / 2 - params.height
+//        params.width = displayMetrics.widthPixels
+//
+//        val myView: View? = if (result != null && !result) {
+//            inflater?.inflate(R.layout.popup_found, null)
+//        } else {
+//            inflater?.inflate(R.layout.popup_not_found, null)
+//        }
+//        myView?.setOnTouchListener { _, event: MotionEvent ->
+//            if (event.y > 0) {
+//                wm?.removeView(myView)
+//            }
+//            true
+//        }
+//
+//        // Add layout to window manager
+//        wm?.addView(myView, params)
 
+        val snackbar = Snackbar
+            .make(coordinatorLayout, "Try again!", Snackbar.LENGTH_LONG)
+            .setAction("RETRY") { }
+        snackbar.setActionTextColor(Color.RED)
+        val sbView = snackbar.view
+        val textView = sbView.findViewById(android.support.design.R.id.snackbar_text) as TextView
+        textView.setTextColor(Color.YELLOW)
+        snackbar.show()
 
-            val myView = inflater?.inflate(R.layout.popup, null)
-            myView?.setOnTouchListener { _, _ ->
-                Toast.makeText(
-                    thisActivity,
-                    "touch",
-                    Toast.LENGTH_LONG
-                ).show()
-                wm?.removeView(myView)
-                true
-            }
-
-            // Add layout to window manager
-            wm?.addView(myView, params)
-        }
     }
 
     private fun getParams(): WindowManager.LayoutParams {

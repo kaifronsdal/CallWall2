@@ -2,27 +2,35 @@ package com.example.callwall
 
 import android.Manifest
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-
-import android.view.LayoutInflater
-import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import android.widget.Toast
 import android.provider.Settings.canDrawOverlays
 import android.os.Build
-import android.annotation.TargetApi
+import android.app.Activity
+import android.content.Context
 import android.graphics.PixelFormat
 import android.view.WindowManager
 import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
+import android.net.Uri
 import android.util.DisplayMetrics
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
 import android.widget.Button
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
+import java.lang.Math.abs
+import java.util.*
+import kotlin.math.sign
 
 
 const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
+const val REGULAR_PERMISSION_REQ_CODE: Int = 100
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
+    var checkingForPermissions: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main);
@@ -36,45 +44,69 @@ class MainActivity : AppCompatActivity() {
             println("toggle: " + IncomingCallReceiver.checkCall)
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED || checkSelfPermission(
-                    Manifest.permission.CALL_PHONE
-                ) == PackageManager.PERMISSION_DENIED
-            ) {
-                val permissions = arrayOf<String>(
-                    Manifest.permission.READ_PHONE_STATE,
-                    Manifest.permission.CALL_PHONE,
-                    Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.INTERNET
-                )
-                requestPermissions(permissions, 100)
-            }
-
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.INTERNET
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissions(
-                    arrayOf(Manifest.permission.INTERNET),
-                    100
-                )
-            }
+        if (checkPermissionOverlay()) {
+            onRecieveOverlay()
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
-    fun checkPermissionOverlay() {
+    private fun onRecieveOverlay() {
+        requestNeededPermissions(
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.CALL_PHONE,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.INTERNET
+        )
+
+        test()
+    }
+
+    private fun requestNeededPermissions(vararg permissions: String) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return
+        }
+        val neededPermissions = mutableListOf<String>()
+
+        for (s: String in permissions) {
+            if (checkSelfPermission(s) != PackageManager.PERMISSION_GRANTED) {
+                neededPermissions.add(s)
+            }
+        }
+
+        requestPermissions(neededPermissions.toTypedArray(), REGULAR_PERMISSION_REQ_CODE)
+    }
+
+    private fun checkPermissionOverlay(): Boolean {
+        if (checkingForPermissions) {
+            return false
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return false
+        }
         if (!canDrawOverlays(this)) {
-            Toast.makeText(
-                this@MainActivity,
-                "Can Use Overylay?",
-                Toast.LENGTH_LONG
-            ).show()
-            val intentSettings = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            checkingForPermissions = true
+            val intentSettings = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + packageName)
+            )
             startActivityForResult(intentSettings, OVERLAY_PERMISSION_REQ_CODE)
+            return false
         } else {
-            run()
+            checkingForPermissions = false
+            return true
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return
+        }
+        if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+            if (canDrawOverlays(this)) {
+                checkingForPermissions = false
+                onRecieveOverlay()
+            } else {
+                checkPermissionOverlay()
+            }
         }
     }
 
@@ -83,49 +115,73 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        Toast.makeText(
-            this@MainActivity,
-            "finished",
-            Toast.LENGTH_LONG
-        ).show()
-
         run()
     }
 
     private fun run() {
-        Toast.makeText(
-            this@MainActivity,
-            "run",
-            Toast.LENGTH_LONG
-        ).show()
+    }
 
-//        val params = getParams()
-////        params.x = 0
-////        params.y = 0
-////        params.y =
-////        params.gravity = Gravity.BOTTOM
-//        val displayMetrics = DisplayMetrics()
-//        windowManager.defaultDisplay.getMetrics(displayMetrics)
-//        params.y = displayMetrics.heightPixels / 2 - params.height
-//        params.width = displayMetrics.widthPixels
-//
-//        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-//        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-//        CheckValidTask.wm = wm
-//        CheckValidTask.inflater = inflater
-//        val myView = inflater.inflate(R.layout.popup_searching, null)
-//        myView.setOnTouchListener { _, _ ->
-//            Toast.makeText(
-//                this@MainActivity,
-//                "touch",
-//                Toast.LENGTH_LONG
-//            ).show()
-//            wm.removeView(myView)
-//            true
-//        }
-//
-//        // Add layout to window manager
-//        wm.addView(myView, params)
+    private fun test() {
+        val params = getParams()
+        val displayMetrics = DisplayMetrics()
+        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        CheckValidTask.wm = wm
+        CheckValidTask.inflater = inflater
+
+        wm.defaultDisplay?.getMetrics(displayMetrics)
+        params.y = displayMetrics.heightPixels / 2 - params.height
+        params.width = displayMetrics.widthPixels
+
+
+        val myView = inflater.inflate(R.layout.popup_searching, null)
+
+        wm.addView(myView, params)
+
+        val animX = SpringAnimation(myView, SpringAnimation.TRANSLATION_X)
+        animX.spring = SpringForce(0f)
+            .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY)
+            .setStiffness(SpringForce.STIFFNESS_MEDIUM)
+        val startX = myView.x
+        var dX = 0f
+        println("-------------------")
+        myView?.setOnTouchListener { view: View, event: MotionEvent ->
+
+            println("-------------------")
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    dX = view.x - event.rawX
+                    animX.cancel()
+                }
+                MotionEvent.ACTION_MOVE -> myView.animate()
+                    .x(event.rawX + dX)
+                    .setDuration(0)
+                    .start()
+                MotionEvent.ACTION_UP -> {
+                    //if (view.x)
+                    Log.e("TEST", "offest: " + (startX - view.x) + "     speed: " + dX)
+                    Log.e("HI", "-------------"+displayMetrics.widthPixels)
+                    println("offest: " + (startX - view.x) + "     speed: " + dX)
+                    if (abs(startX - view.x) > displayMetrics.widthPixels/3) {
+                        val duration: Long = 400
+
+                        myView.animate()
+                            .x(-sign(startX-view.x)*displayMetrics.widthPixels*2)
+                            .setDuration(duration)
+                            .start()
+                        Timer().schedule(object : TimerTask() {
+                            override fun run() {
+                                myView.alpha = 0f
+                                wm.removeView(myView)
+                            }
+                        }, duration - 50)
+                    } else {
+                        animX.start()
+                    }
+                }
+            }
+            true
+        }
     }
 
     private fun getParams(): WindowManager.LayoutParams {

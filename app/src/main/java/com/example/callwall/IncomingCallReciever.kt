@@ -38,11 +38,6 @@ class IncomingCallReceiver: BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        Toast.makeText(
-            thisActivity,
-            "Recieve",
-            Toast.LENGTH_LONG
-        ).show()
         if (!checkCall) {
             return
         }

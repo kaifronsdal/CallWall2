@@ -5,27 +5,22 @@ import android.graphics.PixelFormat
 import android.os.AsyncTask
 import android.os.Build
 import android.util.DisplayMetrics
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
-import com.google.android.material.snackbar.Snackbar
+import android.view.*
 import java.net.URL
-import android.R
-import android.R.id
-import android.widget.TextView
-
-
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
+import android.view.WindowManager
+import android.view.MotionEvent
 
 
 class CheckValidTask : AsyncTask<Int, Void, Boolean>() {
     companion object {
         var thisActivity: Activity? = null
         var wm: WindowManager? = null
-                //= getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        //= getSystemService(Context.WINDOW_SERVICE) as WindowManager
         var inflater: LayoutInflater? = null
         var windowManager: WindowManager? = null
-                        //= getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        //= getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     }
 
     override fun doInBackground(vararg params: Int?): Boolean? {
@@ -58,10 +53,53 @@ class CheckValidTask : AsyncTask<Int, Void, Boolean>() {
 
 
         val myView = inflater?.inflate(R.layout.popup_searching, null)
-        myView?.setOnTouchListener { _, event: MotionEvent ->
-            println(event.y)
-            if (event.y > 0) {
-                wm?.removeView(myView)
+
+
+        //var movingView = findViewById<View>(R.id.popup_found_layout)
+//        myView?.getViewTreeObserver()
+//            ?.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+//                @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+//                override fun onGlobalLayout() {
+//                    var xAnimation = SpringAnimation(
+//                        myView, SpringAnimation.X
+//                    )
+//                    myView?.getViewTreeObserver()?.removeOnGlobalLayoutListener(this)
+//                }
+//            })
+//        val animX = myView.also { view ->
+//            SpringAnimation(view, SpringAnimation.TRANSLATION_X).apply {
+//                //getSpring()
+//                spring.dampingRatio = SpringForce.DAMPING_RATIO_HIGH_BOUNCY
+//                spring.stiffness = SpringForce.STIFFNESS_MEDIUM
+//            }
+//        }
+        val animX = SpringAnimation(myView, SpringAnimation.TRANSLATION_X)
+        animX.getSpring().setDampingRatio(SpringForce.DAMPING_RATIO_HIGH_BOUNCY)
+        animX.getSpring().setStiffness(SpringForce.STIFFNESS_MEDIUM)
+
+        var dX = 0f
+        var dY = 0f
+
+        myView?.setOnTouchListener { view, event: MotionEvent ->
+            //            println(event.y)
+//            if (event.y > 0) {
+//                wm?.removeView(myView)
+//            }
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    dX = view.x - event.rawX
+                    dY = view.y - event.rawY
+
+                    animX.cancel()
+                }
+                MotionEvent.ACTION_MOVE -> myView.animate()
+                    .x(event.rawX + dX)
+                    .y(event.rawY + dY)
+                    .setDuration(0)
+                    .start()
+                MotionEvent.ACTION_UP -> {
+                    animX.start()
+                }
             }
             true
         }
@@ -75,35 +113,26 @@ class CheckValidTask : AsyncTask<Int, Void, Boolean>() {
         println("onPostExecute")
         println(result)
         println("-------------------------------")
-//        val params = getParams()
-//        val displayMetrics = DisplayMetrics()
-//        windowManager?.defaultDisplay?.getMetrics(displayMetrics)
-//        params.y = displayMetrics.heightPixels / 2 - params.height
-//        params.width = displayMetrics.widthPixels
-//
-//        val myView: View? = if (result != null && !result) {
-//            inflater?.inflate(R.layout.popup_found, null)
-//        } else {
-//            inflater?.inflate(R.layout.popup_not_found, null)
-//        }
-//        myView?.setOnTouchListener { _, event: MotionEvent ->
-//            if (event.y > 0) {
-//                wm?.removeView(myView)
-//            }
-//            true
-//        }
-//
-//        // Add layout to window manager
-//        wm?.addView(myView, params)
+        val params = getParams()
+        val displayMetrics = DisplayMetrics()
+        windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+        params.y = displayMetrics.heightPixels / 2 - params.height
+        params.width = displayMetrics.widthPixels
 
-        val snackbar = Snackbar
-            .make(coordinatorLayout, "Try again!", Snackbar.LENGTH_LONG)
-            .setAction("RETRY") { }
-        snackbar.setActionTextColor(Color.RED)
-        val sbView = snackbar.view
-        val textView = sbView.findViewById(android.support.design.R.id.snackbar_text) as TextView
-        textView.setTextColor(Color.YELLOW)
-        snackbar.show()
+        val myView: View? = if (result != null && !result) {
+            inflater?.inflate(R.layout.popup_found, null)
+        } else {
+            inflater?.inflate(R.layout.popup_not_found, null)
+        }
+        myView?.setOnTouchListener { _, event: MotionEvent ->
+            if (event.y > 0) {
+                wm?.removeView(myView)
+            }
+            true
+        }
+
+        // Add layout to window manager
+        wm?.addView(myView, params)
 
     }
 

@@ -7,23 +7,9 @@ import android.provider.Settings
 import android.provider.Settings.canDrawOverlays
 import android.os.Build
 import android.app.Activity
-import android.content.Context
-import android.graphics.PixelFormat
-import android.view.WindowManager
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.DisplayMetrics
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
 import android.widget.Button
-import androidx.dynamicanimation.animation.SpringAnimation
-import androidx.dynamicanimation.animation.SpringForce
-import java.lang.Math.abs
-import java.util.*
-import kotlin.math.sign
-
 
 const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
 const val REGULAR_PERMISSION_REQ_CODE: Int = 100
@@ -38,6 +24,7 @@ class MainActivity : Activity() {
         checkPermissionOverlay()
         IncomingCallReceiver.thisActivity = this
         CheckValidTask.windowManager = windowManager
+        CheckValidTask.layoutInflater = layoutInflater
 
         findViewById<Button>(R.id.toggle).setOnClickListener {
             IncomingCallReceiver.toggleCheck()
@@ -115,96 +102,16 @@ class MainActivity : Activity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        run()
+        if (requestCode == REGULAR_PERMISSION_REQ_CODE) {
+            grantResults.forEach { if () }
+            run()
+        }
     }
 
     private fun run() {
     }
 
     private fun test() {
-        val params = getParams()
-        val displayMetrics = DisplayMetrics()
-        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        CheckValidTask.wm = wm
-        CheckValidTask.inflater = inflater
-
-        wm.defaultDisplay?.getMetrics(displayMetrics)
-        params.y = displayMetrics.heightPixels / 2 - params.height
-        params.width = displayMetrics.widthPixels
-
-
-        val myView = inflater.inflate(R.layout.popup_searching, null)
-
-        wm.addView(myView, params)
-
-        val animX = SpringAnimation(myView, SpringAnimation.TRANSLATION_X)
-        animX.spring = SpringForce(0f)
-            .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY)
-            .setStiffness(SpringForce.STIFFNESS_MEDIUM)
-        val startX = myView.x
-        var dX = 0f
-        println("-------------------")
-        myView?.setOnTouchListener { view: View, event: MotionEvent ->
-
-            println("-------------------")
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    dX = view.x - event.rawX
-                    animX.cancel()
-                }
-                MotionEvent.ACTION_MOVE -> myView.animate()
-                    .x(event.rawX + dX)
-                    .setDuration(0)
-                    .start()
-                MotionEvent.ACTION_UP -> {
-                    //if (view.x)
-                    Log.e("TEST", "offest: " + (startX - view.x) + "     speed: " + dX)
-                    Log.e("HI", "-------------"+displayMetrics.widthPixels)
-                    println("offest: " + (startX - view.x) + "     speed: " + dX)
-                    if (abs(startX - view.x) > displayMetrics.widthPixels/3) {
-                        val duration: Long = 400
-
-                        myView.animate()
-                            .x(-sign(startX-view.x)*displayMetrics.widthPixels*2)
-                            .setDuration(duration)
-                            .start()
-                        Timer().schedule(object : TimerTask() {
-                            override fun run() {
-                                myView.alpha = 0f
-                                wm.removeView(myView)
-                            }
-                        }, duration - 50)
-                    } else {
-                        animX.start()
-                    }
-                }
-            }
-            true
-        }
-    }
-
-    private fun getParams(): WindowManager.LayoutParams {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                        or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-                PixelFormat.TRANSLUCENT
-            )
-        } else {
-            WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                        or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-                PixelFormat.TRANSLUCENT
-            )
-        }
+        buildPopup(R.layout.popup_searching, this, windowManager, layoutInflater)
     }
 }

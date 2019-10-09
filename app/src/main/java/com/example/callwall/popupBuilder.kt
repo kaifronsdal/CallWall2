@@ -10,6 +10,7 @@ import androidx.dynamicanimation.animation.SpringForce
 import java.util.*
 import kotlin.math.sign
 
+var currentPopup: View? = null
 
 public fun buildPopup(
     layout: Int,
@@ -17,6 +18,11 @@ public fun buildPopup(
     windowManager: WindowManager,
     layoutInflater: LayoutInflater
 ): View {
+    if (currentPopup != null) {
+        windowManager.removeView(currentPopup)
+        currentPopup = null
+    }
+
     val params = getParams()
     val displayMetrics = DisplayMetrics()
 
@@ -70,7 +76,10 @@ public fun buildPopup(
 
                     Timer().schedule(object : TimerTask() {
                         override fun run() {
-                            windowManager.removeView(popupView)
+                            if (currentPopup != null) {
+                                windowManager.removeView(popupView)
+                                currentPopup = null
+                            }
                         }
                     }, duration)
                 } else {
@@ -80,6 +89,7 @@ public fun buildPopup(
         }
         true
     }
+    currentPopup = popupView
     return popupView
 }
 

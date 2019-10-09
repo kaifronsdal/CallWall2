@@ -7,18 +7,22 @@ import java.net.URL
 import android.view.WindowManager
 
 
-class CheckValidTask : AsyncTask<Int, Void, Boolean>() {
+class CheckValidTask : AsyncTask<String, Void, Boolean>() {
     companion object {
         var thisActivity: Activity? = null
         var layoutInflater: LayoutInflater? = null
         var windowManager: WindowManager? = null
     }
 
-    override fun doInBackground(vararg params: Int?): Boolean? {
+    override fun doInBackground(vararg params: String?): Boolean? {
         var param = params[0]
         //var response = URL("http://dlongo.pythonanywhere.com/?phone_number=+1$param").readText()
         var response: String?
+        if (param == null) {
+            //return null
+        }
         try {
+            //response = URL("http://dlongo.pythonanywhere.com/?phone_number=+1" + param).readText()
             response = URL("http://dlongo.pythonanywhere.com/?phone_number=+16505461126").readText()
             if (response == "not busy") {
                 return false
@@ -41,8 +45,9 @@ class CheckValidTask : AsyncTask<Int, Void, Boolean>() {
 
     override fun onPostExecute(result: Boolean?) {
         super.onPostExecute(result)
-
-        if (result != null && !result) {
+        if (result == null) {
+            buildPopup(R.layout.popup_undetermined, thisActivity!!, windowManager!!, layoutInflater!!)
+        } else if (!result) {
             buildPopup(R.layout.popup_found, thisActivity!!, windowManager!!, layoutInflater!!)
         } else {
             buildPopup(R.layout.popup_not_found, thisActivity!!, windowManager!!, layoutInflater!!)

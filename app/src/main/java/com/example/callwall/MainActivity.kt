@@ -10,6 +10,7 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Button
+import androidx.core.content.PermissionChecker
 
 const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
 const val REGULAR_PERMISSION_REQ_CODE: Int = 100
@@ -103,8 +104,22 @@ class MainActivity : Activity() {
         grantResults: IntArray
     ) {
         if (requestCode == REGULAR_PERMISSION_REQ_CODE) {
-            grantResults.forEach { if () }
-            run()
+            var notGranted = false
+            grantResults.forEach {
+                if (it == PermissionChecker.PERMISSION_GRANTED) {
+                    notGranted = true
+                }
+            }
+            if (notGranted) {
+                requestNeededPermissions(
+                    Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.CALL_PHONE,
+                    Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.INTERNET
+                )
+            } else {
+                run()
+            }
         }
     }
 

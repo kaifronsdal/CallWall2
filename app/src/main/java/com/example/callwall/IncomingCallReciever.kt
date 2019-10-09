@@ -4,16 +4,11 @@ import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.graphics.PixelFormat
-import android.os.Build
-import android.util.Log
-import android.view.WindowManager
-import android.widget.Toast
 import java.net.URL
+import android.telephony.TelephonyManager
 
 
-
-class IncomingCallReceiver: BroadcastReceiver() {
+class IncomingCallReceiver : BroadcastReceiver() {
     companion object {
         var thisActivity: Activity? = null
         var checkCall: Boolean = true
@@ -23,28 +18,30 @@ class IncomingCallReceiver: BroadcastReceiver() {
         }
     }
 
-    fun checkBusyValid(number: Number): Boolean {
-        //var response = URL("http://10.7.65.105:3000/number/$number").readText()
-        //var response = URL("http://dlongo.pythonanywhere.com/?phone_number=+$number").readText()
-        var response = URL("http://dlongo.pythonanywhere.com/?phone_number=+16505461126").readText()
-        if (response == "not busy") {
-            return false
-        }
-        if (response == "busy") {
-            return true
-        }
-        println("invalid reply $response")
-        return true
-    }
-
     override fun onReceive(context: Context, intent: Intent) {
         if (!checkCall) {
             return
         }
 
+        when (intent.getStringExtra(TelephonyManager.EXTRA_STATE)) {
+            TelephonyManager.EXTRA_STATE_RINGING -> {
+                println("ringing")//onrecieve
+                println(intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
+                CheckValidTask.thisActivity = thisActivity
+                CheckValidTask().execute(intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
+            }
+            TelephonyManager.EXTRA_STATE_OFFHOOK -> {
+                println("offhook")
+            }
+            TelephonyManager.EXTRA_STATE_IDLE -> {
+                println("idle")//onfinish
+            }
+        }
+
+        println("-----------------------------recieved")
+
         var number: Int = 16505461126.toInt()
-        CheckValidTask.thisActivity = thisActivity
-        CheckValidTask().execute(number)
+
         println("Done")
     }
 }

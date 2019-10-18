@@ -21,38 +21,38 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:layout_constraintVertical_bias="0.439" />
 
-    <TextView
-        android:id="@+id/verifiedtext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Calls Verified"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionMode.Title"
-        android:textColor="@android:color/holo_blue_dark"
-        android:typeface="sans"
-        app:fontFamily="@font/julius_sans_one"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toggle"
-        app:layout_constraintVertical_bias="0.325" />
+<!--    <TextView-->
+<!--        android:id="@+id/verifiedtext"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Calls Verified"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionMode.Title"-->
+<!--        android:textColor="@android:color/holo_blue_dark"-->
+<!--        android:typeface="sans"-->
+<!--        app:fontFamily="@font/julius_sans_one"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.498"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/toggle"-->
+<!--        app:layout_constraintVertical_bias="0.325" />-->
 
-    <TextView
-        android:id="@+id/verifiedCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0"
-        android:textAlignment="center"
-        android:textColor="@android:color/holo_green_dark"
-        android:textSize="18sp"
-        app:fontFamily="@font/julius_sans_one"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/verifiedtext"
-        app:layout_constraintVertical_bias="0.117" />
+<!--    <TextView-->
+<!--        android:id="@+id/verifiedCount"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="73"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textColor="@android:color/holo_green_dark"-->
+<!--        android:textSize="18sp"-->
+<!--        app:fontFamily="@font/julius_sans_one"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.498"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/verifiedtext"-->
+<!--        app:layout_constraintVertical_bias="0.117" />-->
 
     <ImageView
         android:id="@+id/imageView"

@@ -1,6 +1,7 @@
 package com.example.callwall
 
 import android.app.Activity
+import android.content.Context
 import android.os.AsyncTask
 import android.view.*
 import java.net.URL
@@ -9,13 +10,14 @@ import android.view.WindowManager
 
 class CheckValidTask : AsyncTask<String, Void, Boolean>() {
     companion object {
-        var thisActivity: Activity? = null
         var layoutInflater: LayoutInflater? = null
         var windowManager: WindowManager? = null
+        var interrupted: Boolean = false
     }
 
     override fun doInBackground(vararg params: String?): Boolean? {
         var param = params[0]
+        println("------------------back")
         //var response = URL("http://dlongo.pythonanywhere.com/?phone_number=+1$param").readText()
         var response: String?
         if (param == null) {
@@ -40,17 +42,21 @@ class CheckValidTask : AsyncTask<String, Void, Boolean>() {
 
     override fun onPreExecute() {
         super.onPreExecute()
-        buildPopup(R.layout.popup_searching, thisActivity!!, windowManager!!, layoutInflater!!)
+        interrupted = false
+        buildPopup(R.layout.popup_searching, windowManager!!, layoutInflater!!)
     }
 
     override fun onPostExecute(result: Boolean?) {
         super.onPostExecute(result)
+        if (interrupted) {
+            return
+        }
         if (result == null) {
-            buildPopup(R.layout.popup_undetermined, thisActivity!!, windowManager!!, layoutInflater!!)
+            buildPopup(R.layout.popup_undetermined, windowManager!!, layoutInflater!!)
         } else if (!result) {
-            buildPopup(R.layout.popup_found, thisActivity!!, windowManager!!, layoutInflater!!)
+            buildPopup(R.layout.popup_found, windowManager!!, layoutInflater!!)
         } else {
-            buildPopup(R.layout.popup_not_found, thisActivity!!, windowManager!!, layoutInflater!!)
+            buildPopup(R.layout.popup_not_found, windowManager!!, layoutInflater!!)
         }
     }
 }

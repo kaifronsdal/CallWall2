@@ -7,10 +7,14 @@ import android.provider.Settings
 import android.provider.Settings.canDrawOverlays
 import android.os.Build
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.content.PermissionChecker
+import java.nio.charset.Charset
+
 
 const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
 const val REGULAR_PERMISSION_REQ_CODE: Int = 100
@@ -23,7 +27,8 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main);
 
         checkPermissionOverlay()
-        IncomingCallReceiver.thisActivity = this
+        //IncomingCallReceiver.thisActivity = this
+        //IncomingCallReceiver.callsChecked = findViewById<TextView>(R.id.verifiedCount)
         CheckValidTask.windowManager = windowManager
         CheckValidTask.layoutInflater = layoutInflater
 
@@ -35,6 +40,40 @@ class MainActivity : Activity() {
         if (checkPermissionOverlay()) {
             onRecieveOverlay()
         }
+    }
+
+    public fun incrementCallList() {
+//        val filename = "TotalCalls"
+//        val fileContents = 0
+//        openFileOutput(filename, Context.MODE_PRIVATE).use {
+//            it.write(fileContents)
+//        }
+//        var content: Int?
+//
+//        openFileInput(filename).use {
+//            content = it.readBytes().toString(Charset.defaultCharset()).toIntOrNull()
+//            if (content == null) {
+//                content = 0
+//            }
+//            findViewById<TextView>(R.id.verifiedCount).text = content.toString()
+//        }
+
+
+
+
+//        val sharedpreferences = getSharedPreferences("CallWall", Context.MODE_PRIVATE)
+//        IncomingCallReceiver.sharedpreferences = sharedpreferences
+//        val editor = sharedpreferences.edit()
+//        if (!sharedpreferences.contains("totalChecked")) {
+//            editor.putInt("totalChecked", 1)
+//            editor.apply()
+//        } else {
+//            editor.putInt("totalChecked", sharedpreferences.getInt("totalChecked", -1) + 1)
+//            editor.apply()
+//        }
+//
+//        println("---------------------" + sharedpreferences.getInt("totalChecked", -1))
+        //findViewById<TextView>(R.id.verifiedCount).text = sharedpreferences.getInt("totalChecked", -1).toString()
     }
 
     private fun onRecieveOverlay() {
@@ -127,6 +166,6 @@ class MainActivity : Activity() {
     }
 
     private fun test() {
-        buildPopup(R.layout.popup_searching, this, windowManager, layoutInflater)
+        //buildPopup(R.layout.popup_searching, this, windowManager, layoutInflater)
     }
 }

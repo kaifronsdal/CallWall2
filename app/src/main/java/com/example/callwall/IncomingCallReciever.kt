@@ -6,11 +6,19 @@ import android.content.Context
 import android.content.Intent
 import java.net.URL
 import android.telephony.TelephonyManager
+import android.widget.TextView
+import android.content.SharedPreferences
+import android.R.id.edit
+
+
+
+
 
 
 class IncomingCallReceiver : BroadcastReceiver() {
     companion object {
-        var thisActivity: Activity? = null
+        //var callsChecked: TextView? = null
+        var sharedpreferences: SharedPreferences? = null
         var checkCall: Boolean = true
 
         fun toggleCheck() {
@@ -25,9 +33,10 @@ class IncomingCallReceiver : BroadcastReceiver() {
 
         when (intent.getStringExtra(TelephonyManager.EXTRA_STATE)) {
             TelephonyManager.EXTRA_STATE_RINGING -> {
+                //MainActivity.incrementCallList()
                 println("ringing")//onrecieve
+                CheckValidTask.interrupted = false
                 println(intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
-                CheckValidTask.thisActivity = thisActivity
                 CheckValidTask().execute(intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER))
             }
             TelephonyManager.EXTRA_STATE_OFFHOOK -> {
@@ -35,6 +44,8 @@ class IncomingCallReceiver : BroadcastReceiver() {
             }
             TelephonyManager.EXTRA_STATE_IDLE -> {
                 println("idle")//onfinish
+                CheckValidTask.interrupted = true
+                endPopupProccess()
             }
         }
 

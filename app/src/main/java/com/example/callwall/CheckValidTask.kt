@@ -1,6 +1,7 @@
 package com.example.callwall
 
 import android.os.AsyncTask
+import android.util.Log
 import java.net.URL
 import android.view.LayoutInflater
 
@@ -34,6 +35,7 @@ class CheckValidTask : AsyncTask<IncomingCallReceiver?, Void, Boolean>() {
             return true
         } catch (e: Exception) {
             println(e)
+            Log.e("---------", e.toString())
             return null
         }
     }

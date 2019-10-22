@@ -27,10 +27,7 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main);
 
         checkPermissionOverlay()
-        //IncomingCallReceiver.thisActivity = this
-        //IncomingCallReceiver.callsChecked = findViewById<TextView>(R.id.verifiedCount)
-        CheckValidTask.windowManager = windowManager
-        CheckValidTask.layoutInflater = layoutInflater
+        //IncomingCallReceiver.layoutInflater = layoutInflater
 
         findViewById<Button>(R.id.toggle).setOnClickListener {
             IncomingCallReceiver.toggleCheck()

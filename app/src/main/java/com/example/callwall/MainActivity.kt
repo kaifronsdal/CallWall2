@@ -37,6 +37,8 @@ class MainActivity : Activity() {
         if (checkPermissionOverlay()) {
             onRecieveOverlay()
         }
+
+        val intent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
     }
 
     public fun incrementCallList() {

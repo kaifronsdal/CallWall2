@@ -3,9 +3,12 @@ package com.example.callwall
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
+import android.os.Build
 import android.telephony.TelephonyManager
 import android.view.LayoutInflater
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 
 
 class IncomingCallReceiver : BroadcastReceiver() {
@@ -18,13 +21,21 @@ class IncomingCallReceiver : BroadcastReceiver() {
     }
 
     var number: String? = ""
+    private var audio : Audio? = null
     private var windowManager: WindowManager? = null
     private var layoutInflater: LayoutInflater? = null
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onReceive(context: Context, intent: Intent) {
         if (!checkCall) {
             return
         }
+
+
+        audio = Audio(context.getSystemService(Context.AUDIO_SERVICE) as AudioManager)
+
+        audio?.saveMuteStatus()
+        audio?.mute()
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -52,17 +63,24 @@ class IncomingCallReceiver : BroadcastReceiver() {
         println("-----------------------------recieved")
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun onPreExecute() {
-
+        println("HERERER")
+//        audio?.saveMuteStatus()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun onPostExecute(result: Boolean?) {
         if (result == null) {
             buildPopup(R.layout.popup_undetermined, windowManager!!, layoutInflater!!)
+            audio?.revertMute()
         } else if (!result) {
             buildPopup(R.layout.popup_found, windowManager!!, layoutInflater!!)
         } else {
+            audio?.revertMute()
             buildPopup(R.layout.popup_not_found, windowManager!!, layoutInflater!!)
         }
+        Thread.sleep(15000) //until call finishes
+        audio?.revertMute()
     }
 }

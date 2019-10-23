@@ -22,9 +22,9 @@ class CheckValidTask : AsyncTask<IncomingCallReceiver?, Void, Boolean>() {
             //return null
         }
         try {
-            val response: String? = URL("http://dlongo.pythonanywhere.com/?phone_number=+1" + param).readText()
-            println("http://dlongo.pythonanywhere.com/?phone_number=+1" + param)
-            //response = URL("http://dlongo.pythonanywhere.com/?phone_number=+16505461126").readText()
+//            val response: String? = URL("http://dlongo.pythonanywhere.com/?phone_number=+1" + param).readText()
+//            println("http://dlongo.pythonanywhere.com/?phone_number=+1" + param)
+            val response = URL("http://dlongo.pythonanywhere.com/?phone_number=+16505461126").readText()
             if (response == "not busy") {
                 return false
             }

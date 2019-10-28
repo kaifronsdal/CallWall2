@@ -1,25 +1,24 @@
 package com.example.callwall
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+
 import android.media.AudioManager
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 
-class Audio (audioManager: AudioManager){
-    var audioManager : AudioManager = audioManager
+class Audio (var audioManager: AudioManager){
     var volume : Int = 5
     var muted : Boolean ?= null
+    var lastRingerMode: Int = AudioManager.RINGER_MODE_NORMAL
 
     fun mute() {
-        this.audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_MUTE, 0)
+        audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
+        //audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_MUTE, 0)
         println("muted")
     }
 
     fun unmute() {
-        audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_UNMUTE, 0)
+        audioManager.ringerMode = lastRingerMode
+        //audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_UNMUTE, 0)
     }
 
     fun getCurVolume() {
@@ -31,12 +30,14 @@ class Audio (audioManager: AudioManager){
     }
 
     fun revertMute() {
+        unmute()
         println("Mute status $muted")
-        if (muted == false) unmute()
+        //if (muted == false) unmute()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun saveMuteStatus() {
+        lastRingerMode = audioManager.ringerMode
         muted = audioManager.isStreamMute(AudioManager.STREAM_RING)
         println("Mute status $muted")
     }

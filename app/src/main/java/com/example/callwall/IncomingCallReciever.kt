@@ -9,6 +9,7 @@ import android.telephony.TelephonyManager
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
+import java.util.*
 
 
 class IncomingCallReceiver : BroadcastReceiver() {
@@ -57,6 +58,7 @@ class IncomingCallReceiver : BroadcastReceiver() {
                 println("idle")//onfinish
                 CheckValidTask.interrupted = true
                 endPopupProccess()
+                audio?.revertMute()
             }
         }
 
@@ -77,10 +79,8 @@ class IncomingCallReceiver : BroadcastReceiver() {
         } else if (!result) {
             buildPopup(R.layout.popup_found, windowManager!!, layoutInflater!!)
         } else {
-            audio?.revertMute()
             buildPopup(R.layout.popup_not_found, windowManager!!, layoutInflater!!)
+            audio?.revertMute()
         }
-        Thread.sleep(15000) //until call finishes
-        audio?.revertMute()
     }
 }

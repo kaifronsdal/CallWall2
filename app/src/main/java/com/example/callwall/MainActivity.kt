@@ -7,103 +7,92 @@ import android.provider.Settings
 import android.provider.Settings.canDrawOverlays
 import android.os.Build
 import android.app.Activity
+import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Button
-import android.widget.TextView
 import androidx.core.content.PermissionChecker
-import java.nio.charset.Charset
+import java.util.*
 
 
-const val OVERLAY_PERMISSION_REQ_CODE: Int = 200
-const val REGULAR_PERMISSION_REQ_CODE: Int = 100
+const val NOTIFICATION_PERMISSION_REQ_CODE: Int = 0x1
+const val OVERLAY_PERMISSION_REQ_CODE: Int = 0x2
+const val REGULAR_PERMISSION_REQ_CODE: Int = 0x4
 
 class MainActivity : Activity() {
     var checkingForPermissions: Boolean = false
+    var notificationManager: NotificationManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main)
 
-        checkPermissionOverlay()
-        //IncomingCallReceiver.layoutInflater = layoutInflater
+        notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+//        requestBasicPermissions()
+//        Timer().schedule(object : TimerTask() {
+//            override fun run() {
+//                checkPermissionOverlay()
+//            }
+//        }, 1000)
 
         findViewById<Button>(R.id.toggle).setOnClickListener {
             IncomingCallReceiver.toggleCheck()
             println("toggle: " + IncomingCallReceiver.checkCall)
         }
 
-        if (checkPermissionOverlay()) {
-            onRecieveOverlay()
-        }
-
-        val intent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+        var done = false
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                println("----------ucuebciecbeu")
+                while (!done) {
+                    println(done)
+                    done = true
+                    if (checkPermissionNotification()) {
+                        done = false
+                    } else if (checkPermissionOverlay()) {
+                        done = false
+                    } else if(requestBasicPermissions()) {
+                        done = false
+                    }
+                    Thread.sleep(2000)
+                }
+            }
+        }, 1000)
     }
 
-    public fun incrementCallList() {
-//        val filename = "TotalCalls"
-//        val fileContents = 0
-//        openFileOutput(filename, Context.MODE_PRIVATE).use {
-//            it.write(fileContents)
-//        }
-//        var content: Int?
-//
-//        openFileInput(filename).use {
-//            content = it.readBytes().toString(Charset.defaultCharset()).toIntOrNull()
-//            if (content == null) {
-//                content = 0
-//            }
-//            findViewById<TextView>(R.id.verifiedCount).text = content.toString()
-//        }
-
-
-
-
-//        val sharedpreferences = getSharedPreferences("CallWall", Context.MODE_PRIVATE)
-//        IncomingCallReceiver.sharedpreferences = sharedpreferences
-//        val editor = sharedpreferences.edit()
-//        if (!sharedpreferences.contains("totalChecked")) {
-//            editor.putInt("totalChecked", 1)
-//            editor.apply()
-//        } else {
-//            editor.putInt("totalChecked", sharedpreferences.getInt("totalChecked", -1) + 1)
-//            editor.apply()
-//        }
-//
-//        println("---------------------" + sharedpreferences.getInt("totalChecked", -1))
-        //findViewById<TextView>(R.id.verifiedCount).text = sharedpreferences.getInt("totalChecked", -1).toString()
-    }
-
-    private fun onRecieveOverlay() {
-        requestNeededPermissions(
+    private fun requestBasicPermissions(): Boolean {
+        return requestNeededPermissions(
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.CALL_PHONE,
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.INTERNET
         )
-
-        test()
     }
 
-    private fun requestNeededPermissions(vararg permissions: String) {
+    private fun requestNeededPermissions(vararg permissions: String): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return
+            return true
         }
         val neededPermissions = mutableListOf<String>()
 
+        var alreadyHave = true
         for (s: String in permissions) {
             if (checkSelfPermission(s) != PackageManager.PERMISSION_GRANTED) {
                 neededPermissions.add(s)
+                alreadyHave = false
             }
         }
 
         requestPermissions(neededPermissions.toTypedArray(), REGULAR_PERMISSION_REQ_CODE)
+        print (alreadyHave)
+        return alreadyHave
     }
 
     private fun checkPermissionOverlay(): Boolean {
         if (checkingForPermissions) {
-            return false
+            //return false
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return false
@@ -112,9 +101,28 @@ class MainActivity : Activity() {
             checkingForPermissions = true
             val intentSettings = Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:" + packageName)
+                Uri.parse("package:$packageName")
             )
             startActivityForResult(intentSettings, OVERLAY_PERMISSION_REQ_CODE)
+            return false
+        } else {
+            checkingForPermissions = false
+            return true
+        }
+    }
+
+    private fun checkPermissionNotification(): Boolean {
+        if (checkingForPermissions) {
+            //return false
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return false
+        }
+        if (!notificationManager?.isNotificationPolicyAccessGranted!!) {
+            checkingForPermissions = true
+            val intentSettings =
+                Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+            startActivityForResult(intentSettings, NOTIFICATION_PERMISSION_REQ_CODE)
             return false
         } else {
             checkingForPermissions = false
@@ -126,10 +134,20 @@ class MainActivity : Activity() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return
         }
-        if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
-            if (canDrawOverlays(this)) {
+        if (requestCode == NOTIFICATION_PERMISSION_REQ_CODE) {
+            if (notificationManager?.isNotificationPolicyAccessGranted!!) {
                 checkingForPermissions = false
-                onRecieveOverlay()
+                checkPermissionOverlay()
+                requestBasicPermissions()
+            } else {
+                checkPermissionNotification()
+            }
+        } else if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+            if (canDrawOverlays(this)) {
+                println("---------aksjdhflkajsdh")
+                checkingForPermissions = false
+                checkPermissionNotification()
+                requestBasicPermissions()
             } else {
                 checkPermissionOverlay()
             }
